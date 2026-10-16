@@ -122,6 +122,7 @@ hotel-management-system/
 │   └── diagrams/
 │   └── requirements/
 ├── README.md
+```
 
 ## What I learned
 
