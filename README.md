@@ -113,8 +113,7 @@ npm run dev
 
 ```text
 hotel-management-system/
-├── backend/
-│   └── src/
+├── src/
 ├── frontend/
 │   └── src/
 ├── docs/
