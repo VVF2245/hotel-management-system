@@ -113,15 +113,9 @@ These enumerations represent closed sets. Booking status and cleaning-task lifec
 
 ## Guests and access accounts
 
-In this version, `Guest` is an independent entity that stores guest information associated with bookings. It does not inherit from `User` and does not need credentials for reception to create bookings on the guest's behalf.
+`Guest` is an independent domain entity associated with bookings. Guests do not need credentials for reception to create bookings on their behalf, and `Guest` does not inherit from the staff `User` account.
 
-If customer access is implemented in the future, add `GuestUser` as another `User` subtype and optionally link it to `Guest`:
-
-* A `Guest` may have no account or one guest account.
-* A `GuestUser` account is linked to exactly one `Guest`.
-* It is recommended that each guest has at most one linked account.
-
-This keeps the `Guest` record independent of whether the guest has an account. There is no need to create inactive or placeholder accounts now; add them when that functionality is implemented.
+If guest sign-in is required for a future online booking feature, add a guest account linked optionally to `Guest` (at most one account per guest). Keep the guest's booking/contact record separate from authentication and authorization, whether the account reuses a common authentication component or is implemented separately. Do not create guest accounts or placeholder staff users in this version.
 
 ## Derived data and model-relevant rules
 
@@ -138,7 +132,6 @@ This keeps the `Guest` record independent of whether the guest has an account. T
 ## Open decisions and assumptions
 
 * The interview confirms that the guest's name is recorded, but does not specify whether an identity document, phone number, or email address is required. The user stories treat these fields as optional and first and last names as required; confirm this before finalising the model.
-* In the current version, only staff accounts can access the system. `GuestUser` is a future extension, not a type that needs to be implemented now.
-* The interview does not detail hotel configuration parameters beyond the need for general configuration. Add specific attributes only once they are defined.
+* In the current version, only staff accounts can access the system. Guest accounts are not part of this version; if needed later, link a separate guest account to `Guest` rather than making `Guest` a staff `User` subtype.
 * To represent automated actors in history records, decide whether to use a common actor entity, an optional user plus a process identifier, or an equivalent mechanism.
 * A dashboard is normally calculated from rooms and bookings; it does not need its own persistent entity unless metric snapshots or history are required.

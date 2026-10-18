@@ -13,11 +13,13 @@ so that I can access the features allowed by my role.
 - Scenario 1: Valid credentials. When a user enters the correct username and password for an active account, the system grants access.
 - Scenario 2: Invalid credentials. If the username or password is incorrect, the system denies access and displays an error without revealing which value was correct.
 - Scenario 3: Inactive account. If the account is inactive, the system denies access.
+- Scenario 4: First sign-in. A newly created user receives a temporary password from the administrator and must choose a new password before using the system.
+- Scenario 5: Forgotten password. An administrator can issue a new temporary password; the user must change it at the next sign-in.
 - Data model: A user has first and last name, a unique username, email address, securely hashed password, user type, account status, and creation date.
 
 ### Technical Constraints
 
-- Passwords must not be stored or logged in plaintext. Use a password-hashing algorithm; no password length or composition policy is specified because none has been agreed.
+- Passwords, including temporary passwords, must not be stored or logged in plaintext. Use a password-hashing algorithm. A temporary password must be changed at first sign-in; no password length or composition policy is specified because none has been agreed.
 
 ### User Story — US-02: Manage users
 
@@ -30,6 +32,7 @@ so that I can manage employee access to the system.
 - Scenario 1: Create and update. Administration can create a user and update their details and user type.
 - Scenario 2: Deactivation. Administration can deactivate an account, and the account can no longer be used to sign in.
 - Scenario 3: Traceability. If a user has associated activity, their record is retained and the account is deactivated instead of being physically deleted.
+- Scenario 4: Initial access. When creating a user, administration sets a temporary password and gives it to the employee through an appropriate channel. The user must replace it at first sign-in.
 - Data model: User types are Reception, Housekeeping, and Administration; account status is Active or Inactive.
 
 ### User Story — US-03: Manage rooms
@@ -42,13 +45,13 @@ so that I can keep the hotel's room inventory up to date.
 
 - Scenario 1: Add a room. Administration can register a room with a number, type, and nightly price.
 - Scenario 2: Deactivation with history. A room linked to historical bookings or tasks is retained and marked inactive instead of being physically deleted.
-- Scenario 3: Active stay. The system prevents a room from being deactivated while a stay is in progress.
+- Scenario 3: Active or scheduled use. The system prevents a room from being deactivated while it has an in-progress stay, a confirmed booking, or an incomplete cleaning task. Confirmed bookings must first be cancelled or reassigned to another room.
 - Data model: A room has a unique number, type, nightly price, optional notes, and an active/inactive record status. Active cleaning is represented by its task and may coexist with an occupied room.
 
 ### User Story — US-04: View rooms
 
 As a hotel employee,<br>
-I want to view active rooms, their current occupancy, and their availability for a date range,<br>
+I want to view active rooms, their current occupancy, and their availability for a date range <br>
 so that I know which rooms can be assigned or prepared.
 
 ### Acceptance Criteria
@@ -108,9 +111,11 @@ so that I can correct or change the stay when necessary.
 
 ### Acceptance Criteria
 
-- Scenario 1: Booking can be updated. Reception can update a booking that is not cancelled or completed.
-- Scenario 2: Revalidation. The system checks dates and availability again before saving changes.
-- Scenario 3: Audit history. The update is recorded with the changed data, responsible user, and date and time.
+- Scenario 1: Confirmed booking. Reception can update the guest, room, or dates of a confirmed booking. The selected room must be active, and its dates must remain valid and available.
+- Scenario 2: In-progress booking. After check-in, reception can change only the check-out date. The guest, room, and check-in date cannot be changed; changing rooms during a stay is outside the scope of this version.
+- Scenario 3: Unmodifiable booking. Cancelled and completed bookings cannot be updated.
+- Scenario 4: Revalidation. The system validates dates, room eligibility, and availability on the server before saving changes.
+- Scenario 5: Audit history. Every update is recorded with the changed data, responsible user, and date and time.
 
 ### User Story — US-09: Cancel a booking
 
@@ -217,19 +222,7 @@ so that I can understand occupancy and booking activity.
 
 ## System administration and use
 
-### User Story — US-17: Configure the hotel
-
-As an administrator,<br>
-I want to manage the hotel's name and basic configuration,<br>
-so that I can adapt the system to the property.
-
-### Acceptance Criteria
-
-- Scenario 1: Hotel details. Administration can view and update the hotel's name and basic configuration.
-- Scenario 2: Room count. The total is derived from registered active rooms rather than a duplicate value that could become outdated.
-- Data model: Configuration contains the hotel name and basic parameters required for the system to operate.
-
-### User Story — US-18: Use a clear interface
+### User Story — US-17: Use a clear interface
 
 As a hotel employee,<br>
 I want to use a clear interface and receive understandable messages,<br>
@@ -237,11 +230,11 @@ so that I can complete my work without advanced technical training.
 
 ### Acceptance Criteria
 
-- Scenario 1: Interface language. Labels and statuses are displayed in Spanish using terms that are understandable to staff.
-- Scenario 2: Validation feedback. When an action cannot be completed, the message explains which data or rule needs to be corrected.
-- Scenario 3: Daily operation. The main tasks can be completed through the interface without direct access to the database.
+- Scenario 1: Validation feedback. When an action cannot be completed, the message explains which data or rule needs to be corrected.
+- Scenario 2: Daily operation. The main tasks can be completed through the interface without direct access to the database.
+- Scenario 3: Date format. Dates are displayed and entered using the en-GB convention dd/MM/yyyy. Date values are stored and exchanged in an unambiguous ISO 8601-compatible format, independently of their display format.
 
-### User Story — US-19: Restrict access by user type
+### User Story — US-18: Restrict access by user type
 
 As an administrator,<br>
 I want each user type to be limited to its authorized actions,<br>
@@ -251,23 +244,18 @@ so that information is protected and staff responsibilities are separated.
 
 - Scenario 1: Reception. Reception can manage guests and bookings, record check-in and check-out, and request cleaning.
 - Scenario 2: Housekeeping. Housekeeping can view and update cleaning tasks, but cannot manage bookings, users, or administrative data.
-- Scenario 3: Administration. Administration can manage users, rooms, bookings, and configuration, and view the dashboard.
+- Scenario 3: Administration. Administration can manage users, rooms, and bookings, and view the dashboard.
 - Scenario 4: Unauthorized access. An operation not allowed for a user type is denied even if invoked outside the user interface.
 
 ### Technical Constraints
 
 - Authorization checks must be enforced on the server, not only by hiding options in the interface.
 
-### User Story — US-20: Allow for future expansion
+## Out of scope and future considerations
 
-As the hotel owner,<br>
-I want the system to be extensible to support online bookings in the future,<br>
-so that new booking channels can be added without rebuilding the system.
+Guest-facing online booking is not part of this version; the system is for internal staff use. It may be considered later, but it is not a user story or delivery commitment for the current release.
 
-### Acceptance Criteria
-
-- Scenario 1: Current scope. Online bookings by guests are not included in this version; the system is for internal staff use.
-- Scenario 2: Future expansion. Online bookings are considered a possible future enhancement and are not presented as functionality implemented in this version.
+Keep booking rules and core reservation operations independent of the staff-facing interface so that a future booking channel can reuse them. Any future channel must use the same server-side validation and availability rules. Do not implement guest accounts, a public booking interface, or channel-specific behavior until those requirements are defined.
 
 ## Business Rules
 
@@ -277,7 +265,7 @@ The check-in date is inclusive and the check-out date is exclusive. The check-ou
 
 ### BR-02. Booking overlaps
 
-Two bookings for the same room overlap when the check-in date of one is earlier than the check-out date of the other and the check-in date of the other is earlier than the check-out date of the first. Cancelled and completed bookings do not block future availability.
+Two bookings for the same room overlap when the check-in date of one is earlier than the check-out date of the other and the check-in date of the other is earlier than the check-out date of the first. Confirmed and in-progress bookings block overlapping dates. Cancelled and completed bookings do not block future availability.
 
 ### BR-03. Future availability and operational readiness
 
@@ -314,3 +302,15 @@ A booking must have a guest, an active room, a check-in date, and a valid check-
 ### BR-11. Dashboard metrics
 
 The dashboard reflects the hotel's status at the time of the query. The current occupancy rate is calculated as occupied rooms / active rooms × 100. Active bookings are those that are Confirmed or In Progress; a future confirmed booking counts as active but not as an occupied room in the current occupancy metric.
+
+### BR-12. Room deactivation
+
+A room cannot be deactivated while it has an in-progress stay, any confirmed booking, or an incomplete cleaning task. Confirmed bookings must first be cancelled or reassigned to another active room. Historical bookings and completed cleaning tasks are retained when a room is deactivated.
+
+### BR-13. Booking updates
+
+A confirmed booking may be updated, subject to the room and date validation rules. Once check-in has been recorded, only the check-out date may be changed, and it must remain valid and not conflict with another booking. The guest, room, and check-in date cannot be changed after check-in. Cancelled and completed bookings cannot be updated. Every permitted update is recorded in the booking history.
+
+### BR-14. Date representation
+
+The interface is in English and displays and accepts dates using the en-GB convention dd/MM/yyyy. The application stores and exchanges date values in an unambiguous ISO 8601-compatible representation (for example, yyyy-MM-dd for a date without a time); display formatting does not change date interpretation.
