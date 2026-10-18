@@ -1,316 +1,316 @@
-# Historias de usuario
+# User Stories
 
-## Acceso y administración
+## Access and administration
 
-### Historia de Usuario — HU-01: Iniciar sesión
+### User Story — US-01: Sign in
 
-Como trabajador del hotel,<br>
-quiero iniciar sesión con mi usuario y contraseña,<br>
-para acceder a las funciones permitidas según mi rol.
+As a hotel employee,<br>
+I want to sign in with my username and password,<br>
+so that I can access the features allowed by my role.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Credenciales válidas. Al introducir un usuario y una contraseña correctos de una cuenta activa, el sistema permite el acceso.
-- Escenario 2: Credenciales no válidas. Si el usuario o la contraseña no son correctos, el sistema deniega el acceso e informa del error sin revelar cuál de los datos era correcto.
-- Escenario 3: Cuenta inactiva. Si la cuenta está desactivada, el sistema deniega el acceso.
-- Modelo de datos: El usuario contiene nombre y apellidos, nombre de usuario único, correo electrónico, contraseña almacenada como hash seguro, rol, estado de la cuenta y fecha de creación.
+- Scenario 1: Valid credentials. When a user enters the correct username and password for an active account, the system grants access.
+- Scenario 2: Invalid credentials. If the username or password is incorrect, the system denies access and displays an error without revealing which value was correct.
+- Scenario 3: Inactive account. If the account is inactive, the system denies access.
+- Data model: A user has first and last name, a unique username, email address, securely hashed password, user type, account status, and creation date.
 
-### Restricciones Técnicas
+### Technical Constraints
 
-- La contraseña no se almacenará ni registrará en texto claro. Se utilizará un algoritmo de hash diseñado para contraseñas; no se prescribe aquí una política de longitud o composición que no se haya acordado.
+- Passwords must not be stored or logged in plaintext. Use a password-hashing algorithm; no password length or composition policy is specified because none has been agreed.
 
-### Historia de Usuario — HU-02: Gestionar usuarios
+### User Story — US-02: Manage users
 
-Como administrador,<br>
-quiero crear y modificar usuarios, asignarles un rol y desactivar sus cuentas,<br>
-para gestionar el acceso de los trabajadores al sistema.
+As an administrator,<br>
+I want to create and update users, assign them a user type, and deactivate their accounts,<br>
+so that I can manage employee access to the system.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Alta y modificación. Administración puede crear un usuario y modificar sus datos y rol.
-- Escenario 2: Desactivación. Administración puede desactivar una cuenta y esta deja de permitir el inicio de sesión.
-- Escenario 3: Trazabilidad. Si el usuario tiene actividad asociada, se conserva su registro y se desactiva en vez de eliminarlo físicamente.
-- Modelo de datos: El rol de cada usuario será recepción, limpieza o administración; su estado será activo o inactivo.
+- Scenario 1: Create and update. Administration can create a user and update their details and user type.
+- Scenario 2: Deactivation. Administration can deactivate an account, and the account can no longer be used to sign in.
+- Scenario 3: Traceability. If a user has associated activity, their record is retained and the account is deactivated instead of being physically deleted.
+- Data model: User types are Reception, Housekeeping, and Administration; account status is Active or Inactive.
 
-### Historia de Usuario — HU-03: Gestionar habitaciones
+### User Story — US-03: Manage rooms
 
-Como administrador,<br>
-quiero registrar, modificar y desactivar habitaciones,<br>
-para mantener actualizado el inventario del hotel.
+As an administrator,<br>
+I want to add, update, and deactivate rooms,<br>
+so that I can keep the hotel's room inventory up to date.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Alta de habitación. Administración puede registrar una habitación con número, tipo y precio por noche.
-- Escenario 2: Desactivación con historial. Una habitación vinculada a reservas o tareas históricas se conserva y se marca como inactiva en lugar de eliminarse físicamente.
-- Escenario 3: Estancia en curso. El sistema impide desactivar una habitación mientras tenga una estancia en curso.
-- Modelo de datos: La habitación contiene número único, tipo, precio por noche, estado de ocupación (vacante u ocupada), observaciones opcionales y estado de registro (activa o inactiva). La existencia de una limpieza activa se representa mediante su tarea y puede coincidir con el estado ocupada.
+- Scenario 1: Add a room. Administration can register a room with a number, type, and nightly price.
+- Scenario 2: Deactivation with history. A room linked to historical bookings or tasks is retained and marked inactive instead of being physically deleted.
+- Scenario 3: Active stay. The system prevents a room from being deactivated while a stay is in progress.
+- Data model: A room has a unique number, type, nightly price, optional notes, and an active/inactive record status. Active cleaning is represented by its task and may coexist with an occupied room.
 
-### Historia de Usuario — HU-04: Consultar habitaciones
+### User Story — US-04: View rooms
 
-Como trabajador del hotel,<br>
-quiero consultar las habitaciones activas, su estado y su disponibilidad para un periodo,<br>
-para saber cuáles puedo asignar o preparar.
+As a hotel employee,<br>
+I want to view active rooms, their current occupancy, and their availability for a date range,<br>
+so that I know which rooms can be assigned or prepared.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Consulta general. El sistema muestra las habitaciones activas, si están vacantes u ocupadas y si tienen una tarea de limpieza activa. Una habitación puede aparecer ocupada y en limpieza al mismo tiempo.
-- Escenario 2: Consulta por periodo. Al indicar fechas, el sistema informa de la disponibilidad considerando las reservas vigentes para ese periodo.
-- Modelo de datos: La disponibilidad para fechas se deriva de las reservas y no es un estado persistido alternativo al estado operativo.
+- Scenario 1: General view. The system displays active rooms, whether each is vacant or occupied, and whether it has an active cleaning task. A room may be occupied and undergoing cleaning at the same time.
+- Scenario 2: Date-range availability. When dates are provided, the system reports availability based on bookings that apply to that period.
+- Data model: Availability for a date range is derived from bookings and is not stored as a separate room status.
 
-## Clientes y reservas
+## Guests and bookings
 
-### Historia de Usuario — HU-05: Gestionar clientes
+### User Story — US-05: Manage guests
 
-Como recepcionista,<br>
-quiero registrar y modificar los datos de los clientes,<br>
-para identificarlos y asociarlos correctamente a sus reservas.
+As a receptionist,<br>
+I want to create and update guest details,<br>
+so that I can identify guests and associate them with their bookings.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Alta de cliente. Recepción puede registrar un cliente con nombre y apellidos.
-- Escenario 2: Datos de contacto opcionales. Documento de identidad, teléfono y correo electrónico pueden registrarse cuando se proporcionen.
-- Modelo de datos: El cliente contiene nombre y apellidos obligatorios; documento de identidad, teléfono y correo electrónico son opcionales.
+- Scenario 1: Create a guest. Reception can register a guest with first and last name.
+- Scenario 2: Optional contact details. An identity document, phone number, and email address may be recorded when provided.
+- Data model: A guest has required first and last names; identity document, phone number, and email address are optional.
 
-### Historia de Usuario — HU-06: Crear una reserva
+### User Story — US-06: Create a booking
 
-Como recepcionista,<br>
-quiero crear una reserva indicando cliente, habitación y fechas,<br>
-para organizar la estancia del huésped.
+As a receptionist,<br>
+I want to create a booking by specifying the guest, room, and dates,<br>
+so that I can organize the guest's stay.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Datos completos. La reserva puede confirmarse cuando tiene un cliente, una habitación activa y fechas válidas.
-- Escenario 2: Datos incompletos o fechas inválidas. El sistema no confirma la reserva e indica qué condición debe corregirse.
-- Modelo de datos: La reserva incluye cliente, habitación, fecha de entrada, fecha de salida, estado, fecha de creación y usuario creador.
+- Scenario 1: Complete details. A booking can be confirmed when it has a guest, an active room, and valid dates.
+- Scenario 2: Missing details or invalid dates. The system does not confirm the booking and explains what needs to be corrected.
+- Data model: A booking includes a guest, room, check-in date, check-out date, status, creation date, and the user who created it.
 
-### Historia de Usuario — HU-07: Evitar reservas incompatibles
+### User Story — US-07: Prevent conflicting bookings
 
-Como recepcionista,<br>
-quiero que el sistema valide la disponibilidad antes de confirmar o modificar una reserva,<br>
-para evitar asignar una misma habitación a huéspedes en periodos incompatibles.
+As a receptionist,<br>
+I want the system to check room availability before confirming or updating a booking,<br>
+so that the same room is not assigned to different guests for overlapping periods.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Fechas disponibles. El sistema confirma la reserva si no hay otra reserva confirmada o en curso que se solape para esa habitación.
-- Escenario 2: Fechas ocupadas. El sistema rechaza la operación si existe una reserva incompatible.
-- Escenario 3: Reserva cancelada. Una reserva cancelada no impide reservar esas fechas.
-- Escenario 4: Solicitudes simultáneas. Si dos solicitudes concurrentes intentan reservar fechas incompatibles, como máximo una puede confirmarse.
+- Scenario 1: Dates are available. The system confirms the booking if no other confirmed or in-progress booking overlaps for that room.
+- Scenario 2: Dates are unavailable. The system rejects the operation if an incompatible booking exists.
+- Scenario 3: Cancelled booking. A cancelled booking does not block those dates.
+- Scenario 4: Simultaneous requests. If two concurrent requests attempt to book incompatible dates, at most one can be confirmed.
 
-### Restricciones Técnicas
+### Technical Constraints
 
-- La validación de fechas y disponibilidad se ejecutará en el servidor. La comprobación y confirmación deberán mantener la integridad ante operaciones concurrentes.
+- Date and availability validation must run on the server. Availability checks and booking confirmation must preserve data integrity under concurrent operations.
 
-### Historia de Usuario — HU-08: Modificar una reserva
+### User Story — US-08: Update a booking
 
-Como recepcionista,<br>
-quiero modificar los datos de una reserva existente,<br>
-para corregir o actualizar la estancia cuando sea necesario.
+As a receptionist,<br>
+I want to update the details of an existing booking,<br>
+so that I can correct or change the stay when necessary.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Reserva modificable. Recepción puede modificar una reserva que no esté cancelada ni finalizada.
-- Escenario 2: Revalidación. El sistema vuelve a comprobar fechas y disponibilidad antes de guardar los cambios.
-- Escenario 3: Historial. La modificación queda registrada con los datos cambiados, usuario responsable y fecha y hora.
+- Scenario 1: Booking can be updated. Reception can update a booking that is not cancelled or completed.
+- Scenario 2: Revalidation. The system checks dates and availability again before saving changes.
+- Scenario 3: Audit history. The update is recorded with the changed data, responsible user, and date and time.
 
-### Historia de Usuario — HU-09: Cancelar una reserva
+### User Story — US-09: Cancel a booking
 
-Como recepcionista,<br>
-quiero cancelar una reserva confirmada,<br>
-para liberar sus fechas y conservar constancia de la cancelación.
+As a receptionist,<br>
+I want to cancel a confirmed booking,<br>
+so that its dates are released and the cancellation is recorded.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Cancelación. Una reserva confirmada puede cancelarse y deja de bloquear fechas.
-- Escenario 2: Conservación. La reserva permanece almacenada con estado cancelado; no se elimina físicamente.
-- Escenario 3: Registro. Se conserva la reserva afectada, el usuario que canceló, la fecha y hora y, si se indica, el motivo.
+- Scenario 1: Cancellation. A confirmed booking can be cancelled and stops blocking its dates.
+- Scenario 2: Retention. The booking remains stored with Cancelled status; it is not physically deleted.
+- Scenario 3: Audit record. The affected booking, the user who cancelled it, the date and time, and an optional reason are retained.
 
-### Historia de Usuario — HU-10: Consultar reservas
+### User Story — US-10: Search bookings
 
-Como recepcionista,<br>
-quiero consultar y filtrar las reservas por cliente, habitación, estado y fechas,<br>
-para encontrar rápidamente la información de una estancia.
+As a receptionist,<br>
+I want to view and filter bookings by guest, room, status, and dates,<br>
+so that I can quickly find the details of a stay.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Filtrado. La lista muestra las reservas que coinciden con los filtros seleccionados.
-- Escenario 2: Información de reserva. Cada resultado permite consultar el cliente, la habitación, las fechas y el estado de la reserva.
+- Scenario 1: Filtering. The list displays bookings matching the selected filters.
+- Scenario 2: Booking details. Each result provides the guest, room, dates, and booking status.
 
-### Historia de Usuario — HU-11: Consultar el historial de reservas
+### User Story — US-11: View booking and cleaning history
 
-Como administrador,<br>
-quiero consultar las acciones realizadas sobre las reservas y las tareas de limpieza,<br>
-para disponer de trazabilidad sobre la actividad del hotel.
+As an administrator,<br>
+I want to review booking actions and cleaning tasks,<br>
+so that I can trace activity in the hotel.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Eventos de reserva. El historial incluye creación, modificación, cancelación, check-in y check-out, con usuario responsable y fecha y hora.
-- Escenario 2: Ocupación y limpieza. El estado de ocupación actual se obtiene de la reserva en curso y el historial de limpiezas se consulta en las tareas de limpieza.
-- Escenario 3: Datos modificados. Para una modificación de reserva, el historial permite identificar los datos que cambiaron.
-- Escenario 4: Integridad histórica. Los usuarios no pueden modificar los eventos históricos.
-- Modelo de datos: `EventoReserva` referencia la reserva y almacena tipo de acción, usuario, fecha y hora, datos modificados cuando corresponda y motivo opcional de cancelación. `TareaLimpieza` conserva el historial de las limpiezas realizadas.
+- Scenario 1: Booking events. The history includes creation, modification, cancellation, check-in, and check-out, with the responsible user and date and time.
+- Scenario 2: Occupancy and cleaning. Current occupancy is derived from the in-progress booking, and cleaning history is available from cleaning tasks.
+- Scenario 3: Changed data. For a booking update, the history identifies which data changed.
+- Scenario 4: Historical integrity. Users cannot modify historical events.
+- Data model: `BookingEvent` references the booking and stores the event type, user, date and time, changed data when applicable, and an optional cancellation reason. `CleaningTask` retains the history of completed cleaning work.
 
-## Estancias y limpieza
+## Stays and housekeeping
 
-### Historia de Usuario — HU-12: Registrar el check-in
+### User Story — US-12: Record check-in
 
-Como recepcionista,<br>
-quiero registrar el check-in de una reserva confirmada,<br>
-para indicar el comienzo de la estancia y actualizar el estado de la habitación.
+As a receptionist,<br>
+I want to record check-in for a confirmed booking,<br>
+so that the stay begins and the room's occupancy can be determined.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Check-in válido. La reserva pasa a estar en curso y la habitación pasa a ocupada.
-- Escenario 2: Habitación no preparada. No se permite el check-in si la habitación está ocupada o tiene una tarea de limpieza posterior a un check-out pendiente o en curso. Una limpieza de servicio durante otra estancia no convierte la habitación en vacante.
-- Escenario 3: Trazabilidad. El check-in se registra en el historial de la reserva.
+- Scenario 1: Valid check-in. The booking changes to In Progress.
+- Scenario 2: Room not ready. Check-in is not allowed if the room is already occupied or has a post-check-out cleaning task that has not been completed. Service cleaning during another stay does not make the room vacant.
+- Scenario 3: Traceability. The check-in is recorded in the booking history.
 
-### Historia de Usuario — HU-13: Registrar el check-out
+### User Story — US-13: Record check-out
 
-Como recepcionista,<br>
-quiero registrar el check-out de una reserva en curso,<br>
-para finalizar la estancia e iniciar el proceso de limpieza.
+As a receptionist,<br>
+I want to record check-out for an in-progress booking,<br>
+so that the stay ends and the post-stay cleaning process begins.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Check-out válido. La reserva pasa a finalizada y la habitación pasa a vacante; la tarea de limpieza posterior al check-out indica que aún no está lista para una nueva estancia.
-- Escenario 2: Tarea de limpieza. El sistema crea una tarea de limpieza pendiente vinculada a la habitación y al check-out.
-- Escenario 3: Trazabilidad. El check-out se registra en el historial de la reserva.
+- Scenario 1: Valid check-out. The booking changes to Completed; the room is no longer occupied, but is not ready for another stay until its post-check-out cleaning task is completed.
+- Scenario 2: Cleaning task. The system creates a pending cleaning task linked to the room and check-out.
+- Scenario 3: Traceability. The check-out is recorded in the booking history.
 
-### Historia de Usuario — HU-14: Solicitar limpieza durante una estancia
+### User Story — US-14: Request cleaning during a stay
 
-Como recepcionista o administrador,<br>
-quiero crear una tarea de limpieza durante una estancia,<br>
-para atender una solicitud o incidencia sin alterar la reserva.
+As a receptionist or administrator,<br>
+I want to create a cleaning task during a stay,<br>
+so that I can address a request or issue without changing the booking.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Creación de tarea. La tarea queda asociada a la habitación, indica que su origen es una solicitud durante la estancia y puede asignarse a un empleado de limpieza.
-- Escenario 2: Estado de habitación. Crear o completar esta tarea no cambia el estado ocupado de la habitación ni finaliza la reserva.
-- Escenario 3: Tareas simultáneas. No puede haber más de una tarea de limpieza no completada por habitación.
-- Modelo de datos: La tarea incluye habitación, origen, solicitante cuando corresponda, empleado asignado opcional, fechas y horas de inicio y finalización, y observaciones o incidencias. No almacena un estado separado: sin hora de inicio está pendiente; con inicio pero sin finalización está en curso; con hora de finalización está completada.
+- Scenario 1: Create a task. The task is associated with the room, identifies an in-stay request as its origin, and can be assigned to a housekeeper.
+- Scenario 2: Room occupancy. Creating or completing this task does not change the room's occupied condition or complete the booking.
+- Scenario 3: Concurrent tasks. A room cannot have more than one incomplete cleaning task at a time.
+- Data model: A task includes a room, origin, optional requesting user, optional assigned housekeeper, start and completion timestamps, and notes or incidents. It does not store a separate status: no start timestamp means Pending; a start timestamp without a completion timestamp means In Progress; a completion timestamp means Completed.
 
-### Historia de Usuario — HU-15: Gestionar tareas de limpieza
+### User Story — US-15: Manage cleaning tasks
 
-Como personal de limpieza,<br>
-quiero consultar, iniciar y completar tareas, y añadir observaciones,<br>
-para organizar el trabajo y comunicar incidencias.
+As a housekeeper,<br>
+I want to view, start, and complete cleaning tasks and add notes,<br>
+so that I can organize my work and report issues.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Consulta. El personal de limpieza puede ver las tareas pendientes y en curso.
-- Escenario 2: Actualización. Puede iniciar una tarea, añadir observaciones o incidencias y registrar su finalización.
-- Escenario 3: Registro. Se conservan las fechas y horas de inicio y finalización; el sistema determina a partir de ellas si la tarea está pendiente, en curso o completada. Las tareas completadas permanecen como historial.
-- Escenario 4: Limpieza tras check-out. Al completar la tarea posterior a un check-out, la habitación queda lista para una nueva estancia, siempre que no tenga otra tarea de limpieza pendiente o en curso.
-- Escenario 5: Limpieza durante estancia. Completar una tarea solicitada durante una estancia no cambia el estado ocupado de la habitación.
+- Scenario 1: View tasks. Housekeeping staff can view pending and in-progress tasks.
+- Scenario 2: Update tasks. They can start a task, add notes or report incidents, and record its completion.
+- Scenario 3: Retain task history. Start and completion timestamps are retained; the system derives whether a task is pending, in progress, or completed. Completed tasks remain available as history.
+- Scenario 4: Post-check-out cleaning. When the post-check-out cleaning task is completed, the room is ready for a new stay unless another post-check-out task remains incomplete.
+- Scenario 5: In-stay cleaning. Completing a task requested during a stay does not change the room's occupied condition.
 
-### Historia de Usuario — HU-16: Consultar el panel de control
+### User Story — US-16: View the dashboard
 
-Como administrador,<br>
-quiero consultar un resumen visual del estado actual del hotel,<br>
-para conocer la ocupación y la actividad de las reservas.
+As an administrator,<br>
+I want to view a visual summary of the hotel's current status,<br>
+so that I can understand occupancy and booking activity.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Estados actuales. El panel muestra habitaciones listas para alojar, habitaciones ocupadas y habitaciones con una tarea de limpieza activa. Los recuentos de ocupadas y en limpieza pueden solaparse.
-- Escenario 2: Ocupación. Muestra el porcentaje actual, calculado como habitaciones ocupadas dividido entre habitaciones activas, multiplicado por 100. Una habitación ocupada durante una limpieza de servicio sigue contando como ocupada.
-- Escenario 3: Reservas activas. Muestra el número de reservas confirmadas o en curso. Una reserva futura confirmada cuenta como activa, pero no como habitación ocupada en el indicador actual.
-- Escenario 4: Datos actualizados. Los indicadores representan el estado en el momento de la consulta.
+- Scenario 1: Current room information. The dashboard shows rooms ready for a stay, occupied rooms, and rooms with an active cleaning task. The occupied and cleaning counts may overlap.
+- Scenario 2: Occupancy rate. The dashboard shows the current rate, calculated as occupied rooms divided by active rooms, multiplied by 100. A room occupied during service cleaning still counts as occupied.
+- Scenario 3: Active bookings. The dashboard shows the number of Confirmed or In Progress bookings. A future confirmed booking counts as active but not as an occupied room in the current occupancy rate.
+- Scenario 4: Current figures. Dashboard metrics reflect the hotel's status at the time of the query.
 
-## Administración y uso del sistema
+## System administration and use
 
-### Historia de Usuario — HU-17: Configurar el hotel
+### User Story — US-17: Configure the hotel
 
-Como administrador,<br>
-quiero mantener el nombre y la configuración básica del hotel,<br>
-para adaptar el sistema a la instalación.
+As an administrator,<br>
+I want to manage the hotel's name and basic configuration,<br>
+so that I can adapt the system to the property.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Datos del hotel. Administración puede consultar y modificar el nombre y la configuración básica.
-- Escenario 2: Número de habitaciones. El total se obtiene de las habitaciones activas registradas y no de un valor duplicado que pueda quedar desactualizado.
-- Modelo de datos: La configuración contiene el nombre del hotel y los parámetros básicos necesarios para el funcionamiento.
+- Scenario 1: Hotel details. Administration can view and update the hotel's name and basic configuration.
+- Scenario 2: Room count. The total is derived from registered active rooms rather than a duplicate value that could become outdated.
+- Data model: Configuration contains the hotel name and basic parameters required for the system to operate.
 
-### Historia de Usuario — HU-18: Usar el sistema en español
+### User Story — US-18: Use a clear interface
 
-Como trabajador del hotel,<br>
-quiero utilizar una interfaz clara y recibir mensajes comprensibles,<br>
-para realizar mis tareas sin formación técnica avanzada.
+As a hotel employee,<br>
+I want to use a clear interface and receive understandable messages,<br>
+so that I can complete my work without advanced technical training.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Interfaz. Las etiquetas y los estados se presentan en español y usan términos comprensibles para el personal.
-- Escenario 2: Validación. Cuando una acción no se puede completar, el mensaje explica qué dato o regla debe corregirse.
-- Escenario 3: Operación diaria. Las acciones principales se pueden completar desde la interfaz, sin acceso directo a la base de datos.
+- Scenario 1: Interface language. Labels and statuses are displayed in Spanish using terms that are understandable to staff.
+- Scenario 2: Validation feedback. When an action cannot be completed, the message explains which data or rule needs to be corrected.
+- Scenario 3: Daily operation. The main tasks can be completed through the interface without direct access to the database.
 
-### Historia de Usuario — HU-19: Restringir el acceso según el rol
+### User Story — US-19: Restrict access by user type
 
-Como administrador,<br>
-quiero que cada rol solo pueda realizar las acciones autorizadas,<br>
-para proteger la información y separar las responsabilidades del personal.
+As an administrator,<br>
+I want each user type to be limited to its authorized actions,<br>
+so that information is protected and staff responsibilities are separated.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Recepción. Puede gestionar clientes y reservas, registrar check-in y check-out y solicitar limpieza.
-- Escenario 2: Limpieza. Puede consultar y actualizar tareas de limpieza, pero no gestionar reservas, usuarios ni datos administrativos.
-- Escenario 3: Administración. Tiene acceso a la gestión de usuarios, habitaciones, reservas y configuración, y al panel de control.
-- Escenario 4: Acceso no autorizado. Una operación no permitida para el rol se deniega aunque se intente invocar fuera de la interfaz.
+- Scenario 1: Reception. Reception can manage guests and bookings, record check-in and check-out, and request cleaning.
+- Scenario 2: Housekeeping. Housekeeping can view and update cleaning tasks, but cannot manage bookings, users, or administrative data.
+- Scenario 3: Administration. Administration can manage users, rooms, bookings, and configuration, and view the dashboard.
+- Scenario 4: Unauthorized access. An operation not allowed for a user type is denied even if invoked outside the user interface.
 
-### Restricciones Técnicas
+### Technical Constraints
 
-- Las comprobaciones de permisos se aplicarán en el servidor, no únicamente ocultando opciones en la interfaz.
+- Authorization checks must be enforced on the server, not only by hiding options in the interface.
 
-### Historia de Usuario — HU-20: Mantener abierta la posibilidad de ampliación
+### User Story — US-20: Allow for future expansion
 
-Como propietario del hotel,<br>
-quiero que el sistema pueda ampliarse en el futuro para ofrecer reservas online,<br>
-para incorporar nuevos canales sin rehacer el sistema completo.
+As the hotel owner,<br>
+I want the system to be extensible to support online bookings in the future,<br>
+so that new booking channels can be added without rebuilding the system.
 
-### Criterios de Aceptación
+### Acceptance Criteria
 
-- Escenario 1: Alcance actual. En esta versión, las reservas online para clientes no están incluidas; el sistema se usa internamente por el personal.
-- Escenario 2: Evolución futura. La posibilidad de reservas online se considera una ampliación futura y no debe confundirse con funcionalidad implementada en esta versión.
+- Scenario 1: Current scope. Online bookings by guests are not included in this version; the system is for internal staff use.
+- Scenario 2: Future expansion. Online bookings are considered a possible future enhancement and are not presented as functionality implemented in this version.
 
-## Reglas de negocio
+## Business Rules
 
-### RN-01. Interpretación del periodo de reserva
+### BR-01. Booking period interpretation
 
-La fecha de entrada está incluida y la fecha de salida excluida. La fecha de salida debe ser posterior a la fecha de entrada. Por tanto, una reserva del 10 al 12 y otra del 12 al 14 no se solapan; ambas pueden confirmarse si se cumplen las demás condiciones.
+The check-in date is inclusive and the check-out date is exclusive. The check-out date must be later than the check-in date. Therefore, a booking from the 10th to the 12th and another from the 12th to the 14th do not overlap; both can be confirmed if all other conditions are met.
 
-### RN-02. Solapamiento de reservas
+### BR-02. Booking overlaps
 
-Dos reservas de la misma habitación se solapan cuando la fecha de entrada de una es anterior a la fecha de salida de la otra y, a la vez, la fecha de entrada de la otra es anterior a la fecha de salida de la primera. Las reservas canceladas y finalizadas no bloquean disponibilidad futura.
+Two bookings for the same room overlap when the check-in date of one is earlier than the check-out date of the other and the check-in date of the other is earlier than the check-out date of the first. Cancelled and completed bookings do not block future availability.
 
-### RN-03. Disponibilidad futura y estado operativo
+### BR-03. Future availability and operational readiness
 
-La disponibilidad para reservar un periodo se determina por la ausencia de reservas confirmadas o en curso que se solapen. El estado de ocupación actual no bloquea por sí solo una reserva futura. Para hacer check-in, la habitación debe estar vacante y lista: no debe tener otra estancia en curso ni una tarea de limpieza posterior a un check-out pendiente o en curso. Una limpieza de servicio durante una estancia puede coincidir con el estado ocupada.
+Availability for a date range is determined by the absence of overlapping confirmed or in-progress bookings. Current occupancy alone does not block a future booking. To check in, a room must be vacant and ready: it must not have another in-progress stay or a pending or in-progress post-check-out cleaning task. Service cleaning during a stay may take place while the room is occupied.
 
-### RN-04. Estados de ocupación y limpieza
+### BR-04. Occupancy and cleaning
 
-Una habitación activa tendrá exactamente un estado de ocupación: vacante u ocupada. Las tareas de limpieza tienen su propio estado y pueden estar activas mientras la habitación está ocupada. Por tanto, la ocupación y la limpieza no son estados mutuamente excluyentes. Una habitación está lista para alojar cuando está vacante y no tiene una tarea de limpieza posterior a un check-out pendiente o en curso. Estos estados presentes no sustituyen la comprobación de reservas para fechas futuras.
+An active room has exactly one occupancy condition: vacant or occupied. Cleaning tasks have their own lifecycle and may be active while the room is occupied. Occupancy and cleaning are therefore not mutually exclusive. A room is ready for a stay when it is vacant and has no pending or in-progress post-check-out cleaning task. These current conditions do not replace booking checks for future dates.
 
-### RN-05. Transiciones por estancia
+### BR-05. Stay transitions
 
-Un check-in válido cambia el estado de ocupación de vacante a ocupada. Un check-out válido cambia el estado de ocupación de ocupada a vacante y crea una tarea de limpieza posterior a la estancia. La habitación no estará lista para alojar hasta que esa tarea se complete.
+A valid check-in changes the room's occupancy condition from vacant to occupied. A valid check-out changes it from occupied to vacant and creates a post-stay cleaning task. The room is not ready for another stay until that task is completed.
 
-### RN-06. Disponibilidad tras el check-out
+### BR-06. Readiness after check-out
 
-Una habitación con una tarea de limpieza posterior al check-out pendiente o en curso no estará lista para un nuevo check-in. Al completar esa tarea, quedará lista si no hay otra limpieza posterior al check-out pendiente o en curso. Las tareas de servicio durante una estancia no hacen que la habitación deje de estar ocupada.
+A room with a pending or in-progress post-check-out cleaning task is not ready for a new check-in. Once that task is completed, the room is ready if no other post-check-out cleaning task is pending or in progress. Service-cleaning tasks during a stay do not make an occupied room vacant.
 
-### RN-07. Limpieza durante una estancia
+### BR-07. Cleaning during a stay
 
-Una tarea de limpieza solicitada durante una estancia no finalizará ni alterará la reserva ni el estado ocupado de la habitación. Por tanto, una habitación puede estar ocupada y en limpieza al mismo tiempo. Solo podrá existir una tarea de limpieza no completada por habitación a la vez.
+A cleaning task requested during a stay does not end or change the booking or the room's occupied condition. A room can therefore be occupied and undergoing cleaning at the same time. Only one incomplete cleaning task may exist for a room at a time.
 
-### RN-08. Conservación de registros
+### BR-08. Record retention
 
-Las reservas canceladas, las tareas de limpieza completadas y los usuarios o habitaciones con referencias históricas se conservarán para mantener la trazabilidad. Las reservas conservarán el estado cancelado y los usuarios y habitaciones podrán marcarse como inactivos; la finalización de una tarea de limpieza se deducirá de sus fechas de inicio y finalización, no de un estado almacenado.
+Cancelled bookings, completed cleaning tasks, and users or rooms referenced by historical records are retained for traceability. Bookings retain their Cancelled status, and users and rooms may be marked inactive; cleaning-task completion is derived from its start and completion timestamps rather than a stored status.
 
-### RN-09. Cancelaciones
+### BR-09. Cancellations
 
-Toda cancelación registrará la reserva afectada, el usuario responsable y la fecha y hora. El motivo es opcional.
+Every cancellation records the affected booking, the responsible user, and the date and time. The reason is optional.
 
-### RN-10. Datos obligatorios de reserva
+### BR-10. Required booking data
 
-Para confirmar una reserva deberán existir un cliente, una habitación activa, una fecha de entrada y una fecha de salida válidas.
+A booking must have a guest, an active room, a check-in date, and a valid check-out date before it can be confirmed.
 
-### RN-11. Métricas del panel
+### BR-11. Dashboard metrics
 
-El panel refleja el estado en el momento de la consulta. El porcentaje de ocupación actual se calcula como habitaciones ocupadas / habitaciones activas × 100. Las reservas activas son las que están confirmadas o en curso; una reserva futura confirmada cuenta como activa, pero no como habitación ocupada en el indicador actual.
+The dashboard reflects the hotel's status at the time of the query. The current occupancy rate is calculated as occupied rooms / active rooms × 100. Active bookings are those that are Confirmed or In Progress; a future confirmed booking counts as active but not as an occupied room in the current occupancy metric.
