@@ -1,0 +1,6 @@
+package main.java.com.hotel.hotel_management.user;
+
+public enum UserStatus {
+    ACTIVE,
+    INACTIVE
+}
