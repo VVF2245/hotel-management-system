@@ -1,7 +1,9 @@
 @startuml ConceptualModel
 title Hotel Management System - Conceptual Model
-skinparam classAttributeIconSize 0
+
+hide circle
 hide empty members
+skinparam classAttributeIconSize 0
 
 ' ===== Enums =====
 enum CleaningTaskOrigin <<Enum>> {
@@ -30,56 +32,56 @@ enum AccountStatus <<Enum>> {
 }
 
 ' ===== Entities =====
-class User <<Entity>> {
-  + firstName
-  + lastName
-  + userName
-  + email
-  + passwordHash
-  + accountStatus
-  + createdAt
+entity User <<Entity>> {
+  firstName
+  lastName
+  userName
+  email
+  passwordHash
+  accountStatus: AccountStatus
+  createdAt
 }
 
-class Receptionist <<Entity>>
-class Housekeeper <<Entity>>
-class Administrator <<Entity>>
+entity Receptionist <<Entity>>
+entity Housekeeper <<Entity>>
+entity Administrator <<Entity>>
 
-class Guest <<Entity>> {
-  + firstName
-  + lastName
-  + identityDocument [0..1]
-  + phone [0..1]
-  + email [0..1]
+entity Guest <<Entity>> {
+  firstName
+  lastName
+  identityDocument [0..1]
+  phone [0..1]
+  email [0..1]
 }
 
-class Booking <<Entity>> {
-  + checkInDate
-  + checkOutDate
-  + status: BookingStatus
-  + createdAt
-  + cancellationReason [0..1]
+entity Booking <<Entity>> {
+  checkInDate
+  checkOutDate
+  status: BookingStatus
+  createdAt
+  cancellationReason [0..1]
 }
 
-class BookingEvent <<Entity>> {
-  + type: BookingEventType
-  + occurredAt
-  + changedData [0..1]
-  + reason [0..1]
+entity BookingEvent <<Entity>> {
+  type: BookingEventType
+  occurredAt
+  changedData [0..1]
+  reason [0..1]
 }
 
-class Room <<Entity>> {
-  + number
-  + type
-  + pricePerNight
-  + notes [0..1]
-  + active
+entity Room <<Entity>> {
+  number
+  type
+  pricePerNight
+  notes [0..1]
+  active
 }
 
-class CleaningTask <<Entity>> {
-  + origin: CleaningTaskOrigin
-  + startedAt [0..1]
-  + completedAt [0..1]
-  + notes [0..1]
+entity CleaningTask <<Entity>> {
+  origin: CleaningTaskOrigin
+  startedAt [0..1]
+  completedAt [0..1]
+  notes [0..1]
 }
 
 ' ===== Inheritance =====
