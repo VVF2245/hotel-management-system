@@ -1,0 +1,101 @@
+@startuml ConceptualModel
+title Hotel Management System - Conceptual Model
+skinparam classAttributeIconSize 0
+hide empty members
+
+' ===== Enums =====
+enum CleaningTaskOrigin <<Enum>> {
+  CHECK_OUT
+  IN_STAY_REQUEST
+}
+
+enum BookingStatus <<Enum>> {
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingEventType <<Enum>> {
+  CREATED
+  MODIFIED
+  CANCELLED
+  CHECKED_IN
+  CHECKED_OUT
+}
+
+enum AccountStatus <<Enum>> {
+  ACTIVE
+  INACTIVE
+}
+
+' ===== Entities =====
+class User <<Entity>> {
+  + firstName
+  + lastName
+  + userName
+  + email
+  + passwordHash
+  + accountStatus
+  + createdAt
+}
+
+class Receptionist <<Entity>>
+class Housekeeper <<Entity>>
+class Administrator <<Entity>>
+
+class Guest <<Entity>> {
+  + firstName
+  + lastName
+  + identityDocument [0..1]
+  + phone [0..1]
+  + email [0..1]
+}
+
+class Booking <<Entity>> {
+  + checkInDate
+  + checkOutDate
+  + status: BookingStatus
+  + createdAt
+  + cancellationReason [0..1]
+}
+
+class BookingEvent <<Entity>> {
+  + type: BookingEventType
+  + occurredAt
+  + changedData [0..1]
+  + reason [0..1]
+}
+
+class Room <<Entity>> {
+  + number
+  + type
+  + pricePerNight
+  + notes [0..1]
+  + active
+}
+
+class CleaningTask <<Entity>> {
+  + origin: CleaningTaskOrigin
+  + startedAt [0..1]
+  + completedAt [0..1]
+  + notes [0..1]
+}
+
+' ===== Inheritance =====
+User <|-- Receptionist
+User <|-- Housekeeper
+User <|-- Administrator
+
+' ===== Associations =====
+Receptionist "1" -- "0..*" Booking
+Receptionist "1" -- "0..*" BookingEvent
+Receptionist "0..1" -- "0..*" CleaningTask
+Housekeeper "0..1" -- "0..*" CleaningTask
+
+Guest "1" -- "0..*" Booking
+Booking "1" -- "0..*" BookingEvent
+Booking "0..*" -- "1" Room
+Room "1" -- "0..*" CleaningTask
+
+@enduml
