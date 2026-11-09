@@ -52,9 +52,13 @@
 
 **Analyst**: Understood. So cleaning can be triggered by scheduled events as well as incidents. Regarding administration, what are their responsibilities?
 
-**Client**: Administration has full control of the system: managing users, rooms, and bookings, and viewing the dashboard.
+**Client**: Administration is in charge of the system itself: managing users and rooms, and viewing the dashboard and the history of what happened in the hotel.
 
-**Analyst**: Perfect, so administration acts as a full-access role with permissions over the entire system.
+**Analyst**: Should administration also create or change bookings, or request cleaning?
+
+**Client**: No. Day-to-day operations belong to reception and cleaning. Administration supervises and configures the system, but it does not handle bookings, guests, or cleaning tasks.
+
+**Analyst**: Understood, so administration is a system and supervision role, separate from daily operations.
 
 **Client**: Yes, exactly.
 
@@ -78,7 +82,7 @@
 
 **Client**: The administrator can give them a temporary password through an appropriate channel. Employees must choose a new password the first time they sign in. If they forget it, administration can issue another temporary password.
 
-**Analyst**: Understood. So we need role-based access control: reception, cleaning, and administration, each with different permissions. Administration will have full access, reception will manage bookings, and cleaning will manage cleaning tasks.
+**Analyst**: Understood. So we need role-based access control: reception, cleaning, and administration, each with different permissions. Administration will manage users and rooms and supervise activity, reception will manage guests and bookings, and cleaning will manage cleaning tasks.
 
 **Client**: Yes, that is correct.
 
@@ -96,7 +100,7 @@ The system must manage rooms with number, type, price, and active/inactive recor
 
 The staff interface will be in English, with dates displayed as dd/MM/yyyy. Booking date values are stored and exchanged in an unambiguous ISO 8601-compatible format. Bookings will include guest name, check-in and check-out dates, and assigned room, preventing date overlaps. Check-in is inclusive and check-out is exclusive; for example, a booking from 10/05/2026 to 12/05/2026 does not overlap one starting on 12/05/2026. A history of booking actions, including cancellations, must be stored. Confirmed bookings can be updated before check-in; after check-in, only the check-out date can be changed.
 
-There will be user roles: reception, cleaning, and administration, with administration having full access to the system. New users receive a temporary password and must replace it on first sign-in.
+There will be user roles: reception, cleaning, and administration, with administration limited to managing users and rooms and to supervising activity through the history and the dashboard, without handling bookings or cleaning tasks. New users receive a temporary password and must replace it on first sign-in.
 
 The cleaning module will allow staff to view rooms pending cleaning, mark them as completed, and add notes.
 
