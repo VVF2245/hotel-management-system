@@ -17,27 +17,31 @@ A full-stack hotel management application developed with Java, Spring Boot and R
 ## Tech Stack
 
 **Backend**
-- Java
+- Java 21
 - Spring Boot
+- Spring Data JPA (Hibernate)
+- Bean Validation
 
 **Frontend**
 - React
 - JavaScript
 
 **Database**
-- (...)
+- MySQL 8.4
+- Docker Compose (local development database)
 
 **Tools**
 - Git
-- Github
+- GitHub
+- Docker
 
 ## Architecture
 
 The application is structured into a backend and a frontend:
 
-- **Backend:** Provides the application logic and handles hotel management operations throuhg Spring Boot.
+- **Backend:** Provides the application logic and handles hotel management operations through Spring Boot.
 - **Frontend:** Provides the user interface for interacting with the application using React.
-- **Database:** (...)
+- **Database:** MySQL stores users, guests, rooms, bookings, booking history and cleaning tasks. The backend accesses it through Spring Data JPA.
 
 ## Getting Started
 
@@ -45,9 +49,9 @@ The application is structured into a backend and a frontend:
 
 Make sure you have the following installed:
 
-- Java (version...)
+- Java 21
 - Node.js and npm
-- (Database system)
+- Docker Desktop (runs the MySQL database)
 - Git
 
 ### Installation
@@ -64,18 +68,21 @@ git clone https://github.com/VVF2245/Hotel-Management-System.git
 cd Hotel-Management-System
 ```
 
-3. Configure the database and application settings in the backend configuration file, if required.
+3. Create your local environment file from the example and set your own passwords
+
+```bash
+cp .env.example .env
+```
+
+4. Start the database (see [Database](#database))
+
+```bash
+docker compose up -d
+```
 
 ### Running the backend
 
-Navigate to the backend directory:
-```bash
-cd backend
-```
-
-Run the Spring Boot application using your IDE or the project's build tool.
-
-If the project uses Maven, you can run:
+The backend lives in the repository root. Run the Spring Boot application from your IDE or with Maven:
 
 ```bash
 ./mvnw spring-boot:run
@@ -107,20 +114,67 @@ Start the development server:
 npm run dev
 ```
 
-> Note: The commands and directory names above may need to be adjusted to match the project's actual structure and configuration.
+## Database
+
+The local database is MySQL 8.4, run with Docker Compose ([docker-compose.yml](docker-compose.yml)). It is published on port **3307** so it does not clash with a MySQL or MariaDB server already using 3306.
+
+### Configuration
+
+Credentials are kept in a `.env` file in the project root. It is ignored by git; [.env.example](.env.example) lists the required keys:
+
+| Variable | Used by | Purpose |
+|---|---|---|
+| `DB_URL` | Spring Boot | JDBC URL, `jdbc:mysql://localhost:3307/hotel_management` |
+| `DB_USERNAME` | Docker and Spring Boot | Application database user |
+| `DB_PASSWORD` | Docker and Spring Boot | Password of the application user |
+| `MYSQL_ROOT_PASSWORD` | Docker | Password of the MySQL `root` user |
+
+Docker Compose reads `.env` automatically. Spring Boot imports it through `spring.config.import` in [application.properties](src/main/resources/application.properties), so no system environment variables are needed. Real environment variables take precedence, which allows other environments to provide their own values.
+
+On first start, the container creates the `hotel_management` database and the application user. Changing the credentials in `.env` later requires recreating the volume (`docker compose down -v`), which deletes the data.
+
+### Schema
+
+The schema is generated from the JPA entities (`spring.jpa.hibernate.ddl-auto=update`) while the data model is being defined. Versioned migrations with Flyway are planned before the business services are implemented.
+
+| Table | Content |
+|---|---|
+| `users` | Staff accounts. Single-table inheritance; `user_type` is `RECEPTIONIST`, `HOUSEKEEPER` or `ADMINISTRATOR` |
+| `guest` | Guests and their optional contact and identity document details |
+| `room` | Room inventory: unique number, type, nightly price, active flag |
+| `booking` | Stays: guest, room, check-in and check-out dates, status, creating receptionist |
+| `booking_event` | Immutable booking history: created, modified, cancelled, checked in, checked out |
+| `cleaning_task` | Cleaning work per room; its state is derived from the start and completion timestamps |
+
+Records referenced by history are never physically deleted: users and rooms are deactivated, and bookings are cancelled. The conceptual model is in [docs/diagrams/conceptual_model.puml](docs/diagrams/conceptual_model.puml).
+
+### Useful commands
+
+| Action | Command |
+|---|---|
+| Start the database | `docker compose up -d` |
+| Check its status | `docker compose ps` |
+| View its logs | `docker compose logs mysql` |
+| Open a MySQL shell | `docker exec -it hotel-mysql mysql -u <DB_USERNAME> -p hotel_management` |
+| Stop it (data is kept) | `docker compose stop` |
+| Remove the container (data is kept) | `docker compose down` |
+| Remove the container and all data | `docker compose down -v` |
 
 ## Project Structure
 
 ```text
 hotel-management-system/
-├── src/
+├── src/                    # Spring Boot backend
 ├── frontend/
 │   └── src/
 ├── docs/
-│   └── architecture/
-│   └── diagrams/
+│   ├── architecture/
+│   ├── diagrams/
 │   └── requirements/
-├── README.md
+├── docker-compose.yml      # Local MySQL database
+├── .env.example            # Template for the local .env file
+├── pom.xml
+└── README.md
 ```
 
 ## What I learned
