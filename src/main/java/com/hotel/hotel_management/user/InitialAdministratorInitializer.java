@@ -42,14 +42,13 @@ public class InitialAdministratorInitializer implements ApplicationRunner {
         Administrator administrator = new Administrator();
 
         administrator.setFirstName("System");
-        administrator.setFirstName("System");
         administrator.setLastName("Administrator");
         administrator.setUsername(properties.username());
         administrator.setEmail(properties.email());
 
         userService.assignTemporaryPassword(administrator, properties.password());
 
-        log.info("Initial administrator '{} created; password change required at first sign-in", properties.username());
+        log.info("Initial administrator '{}' created; password change required at first sign-in", properties.username());
     }
     
 }
