@@ -80,7 +80,7 @@
 
 **Analyst**: How should employees get access when an administrator creates their account?
 
-**Client**: The administrator can give them a temporary password through an appropriate channel. Employees must choose a new password the first time they sign in. If they forget it, administration can issue another temporary password.
+**Client**: The system should generate a temporary password, and the administrator gives it to the employee through an appropriate channel. Administrators should not choose passwords themselves. Employees must choose a new password the first time they sign in. If they forget it, administration can ask the system for another temporary password.
 
 **Analyst**: Understood. So we need role-based access control: reception, cleaning, and administration, each with different permissions. Administration will manage users and rooms and supervise activity, reception will manage guests and bookings, and cleaning will manage cleaning tasks.
 
@@ -100,7 +100,7 @@ The system must manage rooms with number, type, price, and active/inactive recor
 
 The staff interface will be in English, with dates displayed as dd/MM/yyyy. Booking date values are stored and exchanged in an unambiguous ISO 8601-compatible format. Bookings will include guest name, check-in and check-out dates, and assigned room, preventing date overlaps. Check-in is inclusive and check-out is exclusive; for example, a booking from 10/05/2026 to 12/05/2026 does not overlap one starting on 12/05/2026. A history of booking actions, including cancellations, must be stored. Confirmed bookings can be updated before check-in; after check-in, only the check-out date can be changed.
 
-There will be user roles: reception, cleaning, and administration, with administration limited to managing users and rooms and to supervising activity through the history and the dashboard, without handling bookings or cleaning tasks. New users receive a temporary password and must replace it on first sign-in.
+There will be user roles: reception, cleaning, and administration, with administration limited to managing users and rooms and to supervising activity through the history and the dashboard, without handling bookings or cleaning tasks. New users receive a system-generated temporary password and must replace it on first sign-in.
 
 The cleaning module will allow staff to view rooms pending cleaning, mark them as completed, and add notes.
 

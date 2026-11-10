@@ -14,7 +14,7 @@ Represents a staff access account. In the UML diagram, `User` is the supertype a
 * `username` — unique
 * `email`
 * `passwordHash` — never store the original password
-* `mustChangePassword` — true while the account has a temporary password issued by an administrator (US-01, US-02)
+* `mustChangePassword` — true while the account has a system-generated temporary password (US-01, US-02)
 * `accountStatus` — active or inactive
 * `createdAt`
 
