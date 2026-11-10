@@ -128,10 +128,17 @@ Credentials are kept in a `.env` file in the project root. It is ignored by git;
 | `DB_USERNAME` | Docker and Spring Boot | Application database user |
 | `DB_PASSWORD` | Docker and Spring Boot | Password of the application user |
 | `MYSQL_ROOT_PASSWORD` | Docker | Password of the MySQL `root` user |
+| `ADMIN_USERNAME` | Spring Boot | Username of the initial administrator (default `admin`) |
+| `ADMIN_EMAIL` | Spring Boot | Email of the initial administrator |
+| `ADMIN_INITIAL_PASSWORD` | Spring Boot | Initial administrator password; required while no administrator exists |
 
 Docker Compose reads `.env` automatically. Spring Boot imports it through `spring.config.import` in [application.properties](src/main/resources/application.properties), so no system environment variables are needed. Real environment variables take precedence, which allows other environments to provide their own values.
 
 On first start, the container creates the `hotel_management` database and the application user. Changing the credentials in `.env` later requires recreating the volume (`docker compose down -v`), which deletes the data.
+
+### Initial administrator
+
+When the application starts and no administrator exists, it creates one from `ADMIN_USERNAME`, `ADMIN_EMAIL` and `ADMIN_INITIAL_PASSWORD`. The password is stored only as a bcrypt hash, is never logged, and must be changed at first sign-in. If `ADMIN_INITIAL_PASSWORD` is empty, or the username already belongs to another user, the application refuses to start. Once an administrator exists, these variables are ignored.
 
 ### Schema
 

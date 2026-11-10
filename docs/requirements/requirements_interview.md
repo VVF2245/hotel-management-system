@@ -82,6 +82,10 @@
 
 **Client**: The system should generate a temporary password, and the administrator gives it to the employee through an appropriate channel. Administrators should not choose passwords themselves. Employees must choose a new password the first time they sign in. If they forget it, administration can ask the system for another temporary password.
 
+**Analyst**: Who creates the first administrator account, if no administrator exists yet?
+
+**Client**: Whoever installs the system sets it up once. That first administrator must also change the password the first time they sign in.
+
 **Analyst**: Understood. So we need role-based access control: reception, cleaning, and administration, each with different permissions. Administration will manage users and rooms and supervise activity, reception will manage guests and bookings, and cleaning will manage cleaning tasks.
 
 **Client**: Yes, that is correct.
