@@ -14,14 +14,15 @@ Represents a staff access account. In the UML diagram, `User` is the supertype a
 * `username` — unique
 * `email`
 * `passwordHash` — never store the original password
+* `mustChangePassword` — true while the account has a temporary password issued by an administrator (US-01, US-02)
 * `accountStatus` — active or inactive
 * `createdAt`
 
 ### User subtypes
 
-* `ReceptionUser`: a member of the reception staff.
-* `HousekeepingUser`: a member of the housekeeping staff.
-* `AdministratorUser`: a user with administrative permissions.
+* `Receptionist`: a member of the reception staff. Operates guests, bookings, check-in and check-out, and requests in-stay cleaning.
+* `Housekeeper`: a member of the housekeeping staff. Works on cleaning tasks.
+* `Administrator`: manages the system (users and rooms) and supervises activity through the history and the dashboard. It does not operate bookings, guests, or cleaning tasks, so it takes part in no operational relationship.
 
 All three subtypes inherit the attributes of `User`. In this version, each account belongs to exactly one subtype.
 
@@ -45,11 +46,14 @@ Represents a person associated with a booking.
 * `id`
 * `firstName`
 * `lastName`
-* `identityDocument` — optional
+* `documentType` — optional; DNI, NIE, passport, or other
+* `documentNumber` — optional; free text, because document numbers may contain letters and leading zeros
 * `phone` — optional
 * `email` — optional
 
 First and last names are considered required as an analysis assumption; the interview only confirms that the guest's name is recorded.
+
+The identity document is split into type and number because a number alone is ambiguous: the same value may exist for different document types or issuing countries, and the type determines which format validation applies. Both fields are recorded together or left empty together. The document number is normalised before it is stored (whitespace and hyphens removed, letters in upper case). It is not unique: the guest record does not store the issuing country, so the same type and number may legitimately belong to different people.
 
 ### Booking
 
@@ -60,9 +64,10 @@ Represents a requested or completed stay. Its `status` stores the current lifecy
 * `checkOutDate`
 * `status` — confirmed, in progress, completed, or cancelled
 * `createdAt`
-* `cancellationReason` — optional; this may instead be stored in the booking history event
 
-A booking must reference a guest, a room, and the user who created it. Later events are modelled in `BookingEvent`.
+The cancellation reason is not a booking attribute: it is stored as the `reason` of the `CANCELLED` booking event, so it is recorded together with the responsible receptionist and the date and time (BR-09).
+
+A booking must reference a guest, a room, and the receptionist who created it. Later events are modelled in `BookingEvent`.
 
 ### BookingEvent
 
@@ -74,7 +79,7 @@ Represents an auditable event in a booking's lifecycle.
 * `changedData` — optional, used for modifications
 * `reason` — optional, for example, a cancellation reason
 
-It must reference the affected booking and the responsible user. For automated events, the actor may be a system process rather than a user; the model can represent both using a nullable actor or a shared actor abstraction.
+It must reference the affected booking and the receptionist who performed the action. Every booking event in this version (creation, modification, cancellation, check-in, and check-out) is a reception action, so the actor is always a receptionist and never a system process.
 
 ### CleaningTask
 
@@ -86,7 +91,7 @@ Represents a cleaning task created after check-out or requested during a stay.
 * `completedAt` — optional until completion
 * `notes` — optional
 
-It must reference a room. It may reference the requesting user and the assigned housekeeper; both references are optional depending on the origin and assignment. Its lifecycle is derived from its timestamps: no `startedAt` means pending; `startedAt` without `completedAt` means in progress; and `completedAt` means completed. A completed task must also have a start timestamp, and completion must not precede the start. Store the timestamps, not a separate status value.
+It must reference a room. It may reference the requesting receptionist and the assigned housekeeper; both references are optional depending on the origin and assignment (a task created automatically at check-out has no requester). Its lifecycle is derived from its timestamps: no `startedAt` means pending; `startedAt` without `completedAt` means in progress; and `completedAt` means completed. A completed task must also have a start timestamp, and completion must not precede the start. Store the timestamps, not a separate status value.
 
 ## Candidate enumerations
 
@@ -96,20 +101,22 @@ These enumerations represent closed sets. Booking status and cleaning-task lifec
 * `BookingStatus`: `CONFIRMED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`.
 * `BookingEventType`: `CREATED`, `MODIFIED`, `CANCELLED`, `CHECKED_IN`, `CHECKED_OUT`.
 * `AccountStatus`: `ACTIVE`, `INACTIVE`.
+* `DocumentType`: `DNI`, `NIE`, `PASSPORT`, `OTHER`.
 
 `Room.type` can be a configurable catalogue instead of an enumeration if administration must add room types without changing the code. Notes, incidents, and reasons remain free text.
 
 ## Candidate relationships and cardinalities
 
-* **User — subtypes:** `ReceptionUser`, `HousekeepingUser`, and `AdministratorUser` inherit from `User`. Every account in this version must belong to exactly one of these subtypes.
+* **User — subtypes:** `Receptionist`, `Housekeeper`, and `Administrator` inherit from `User`. Every account in this version must belong to exactly one of these subtypes.
 * **Guest — Booking:** a guest may have zero or many bookings; each booking belongs to one guest.
 * **Room — Booking:** a room may be associated with zero or many bookings over time; each booking is for one room.
-* **User — Booking (creator):** a user may create zero or many bookings; each booking retains its creator.
+* **Receptionist — Booking (creator):** a receptionist may create zero or many bookings; each booking retains its creator.
 * **Booking — BookingEvent:** a booking may have zero or many events; each event belongs to one booking.
-* **User — BookingEvent (actor):** a user may perform zero or many events; each event identifies a user or a system process as the actor.
+* **Receptionist — BookingEvent (actor):** a receptionist may perform zero or many events; each event identifies exactly one receptionist as the actor.
 * **Room — CleaningTask:** a room may have zero or many tasks over time; each task belongs to one room.
-* **User — CleaningTask (requester):** a user may request zero or many tasks; this relationship may be optional for tasks created automatically after check-out.
-* **User — CleaningTask (assignee):** an employee may be assigned zero or many tasks; a task may not have an assignee yet.
+* **Receptionist — CleaningTask (requester):** a receptionist may request zero or many tasks; a task created automatically after check-out has no requester.
+* **Housekeeper — CleaningTask (assignee):** a housekeeper may be assigned zero or many tasks; a task may not have an assignee yet.
+* **Administrator:** takes part in no operational relationship. Its permissions (users, rooms, history, dashboard) are an authorization concern, not associations in the data model.
 
 ## Guests and access accounts
 
@@ -131,7 +138,6 @@ If guest sign-in is required for a future online booking feature, add a guest ac
 
 ## Open decisions and assumptions
 
-* The interview confirms that the guest's name is recorded, but does not specify whether an identity document, phone number, or email address is required. The user stories treat these fields as optional and first and last names as required; confirm this before finalising the model.
+* The interview confirms that the guest's name is recorded, but does not specify whether an identity document (type and number), phone number, or email address is required. The user stories treat these fields as optional and first and last names as required; confirm this before finalising the model.
 * In the current version, only staff accounts can access the system. Guest accounts are not part of this version; if needed later, link a separate guest account to `Guest` rather than making `Guest` a staff `User` subtype.
-* To represent automated actors in history records, decide whether to use a common actor entity, an optional user plus a process identifier, or an equivalent mechanism.
 * A dashboard is normally calculated from rooms and bookings; it does not need its own persistent entity unless metric snapshots or history are required.

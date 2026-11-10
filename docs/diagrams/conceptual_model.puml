@@ -31,6 +31,13 @@ enum AccountStatus <<Enum>> {
   INACTIVE
 }
 
+enum DocumentType <<Enum>> {
+  DNI
+  NIE
+  PASSPORT
+  OTHER
+}
+
 ' ===== Entities =====
 entity User <<Entity>> {
   firstName
@@ -38,6 +45,7 @@ entity User <<Entity>> {
   userName
   email
   passwordHash
+  mustChangePassword
   accountStatus: AccountStatus
   createdAt
 }
@@ -49,17 +57,22 @@ entity Administrator <<Entity>>
 entity Guest <<Entity>> {
   firstName
   lastName
-  identityDocument [0..1]
+  documentType: DocumentType [0..1]
+  documentNumber [0..1]
   phone [0..1]
   email [0..1]
 }
+
+note right of Guest
+  documentType and documentNumber
+  are both present or both absent.
+end note
 
 entity Booking <<Entity>> {
   checkInDate
   checkOutDate
   status: BookingStatus
   createdAt
-  cancellationReason [0..1]
 }
 
 entity BookingEvent <<Entity>> {
@@ -90,10 +103,17 @@ User <|-- Housekeeper
 User <|-- Administrator
 
 ' ===== Associations =====
-Receptionist "1" -- "0..*" Booking
-Receptionist "1" -- "0..*" BookingEvent
-Receptionist "0..1" -- "0..*" CleaningTask
-Housekeeper "0..1" -- "0..*" CleaningTask
+Receptionist "1" -- "0..*" Booking : creates
+Receptionist "1" -- "0..*" BookingEvent : performs
+Receptionist "0..1" -- "0..*" CleaningTask : requests
+Housekeeper "0..1" -- "0..*" CleaningTask : assigned to
+
+note bottom of Administrator
+  System and supervision role:
+  manages users and rooms, reviews
+  history and dashboard. It does not
+  operate bookings, guests or cleaning.
+end note
 
 Guest "1" -- "0..*" Booking
 Booking "1" -- "0..*" BookingEvent

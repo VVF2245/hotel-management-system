@@ -15,7 +15,7 @@ so that I can access the features allowed by my role.
 - Scenario 3: Inactive account. If the account is inactive, the system denies access.
 - Scenario 4: First sign-in. A newly created user receives a temporary password from the administrator and must choose a new password before using the system.
 - Scenario 5: Forgotten password. An administrator can issue a new temporary password; the user must change it at the next sign-in.
-- Data model: A user has first and last name, a unique username, email address, securely hashed password, user type, account status, and creation date.
+- Data model: A user has first and last name, a unique username, email address, securely hashed password, an indicator that a temporary password must be changed, user type, account status, and creation date.
 
 ### Technical Constraints
 
@@ -45,7 +45,7 @@ so that I can keep the hotel's room inventory up to date.
 
 - Scenario 1: Add a room. Administration can register a room with a number, type, and nightly price.
 - Scenario 2: Deactivation with history. A room linked to historical bookings or tasks is retained and marked inactive instead of being physically deleted.
-- Scenario 3: Active or scheduled use. The system prevents a room from being deactivated while it has an in-progress stay, a confirmed booking, or an incomplete cleaning task. Confirmed bookings must first be cancelled or reassigned to another room.
+- Scenario 3: Active or scheduled use. The system prevents a room from being deactivated while it has an in-progress stay, a confirmed booking, or an incomplete cleaning task. Confirmed bookings must first be cancelled or reassigned to another room by reception, because administration does not operate bookings.
 - Data model: A room has a unique number, type, nightly price, optional notes, and an active/inactive record status. Active cleaning is represented by its task and may coexist with an occupied room.
 
 ### User Story — US-04: View rooms
@@ -72,7 +72,8 @@ so that I can identify guests and associate them with their bookings.
 
 - Scenario 1: Create a guest. Reception can register a guest with first and last name.
 - Scenario 2: Optional contact details. An identity document, phone number, and email address may be recorded when provided.
-- Data model: A guest has required first and last names; identity document, phone number, and email address are optional.
+- Scenario 3: Identity document. When an identity document is recorded, both its type and its number are required.
+- Data model: A guest has required first and last names; identity document (type and number), phone number, and email address are optional. Document types are DNI, NIE, Passport, and Other.
 
 ### User Story — US-06: Create a booking
 
@@ -152,7 +153,8 @@ so that I can trace activity in the hotel.
 - Scenario 2: Occupancy and cleaning. Current occupancy is derived from the in-progress booking, and cleaning history is available from cleaning tasks.
 - Scenario 3: Changed data. For a booking update, the history identifies which data changed.
 - Scenario 4: Historical integrity. Users cannot modify historical events.
-- Data model: `BookingEvent` references the booking and stores the event type, user, date and time, changed data when applicable, and an optional cancellation reason. `CleaningTask` retains the history of completed cleaning work.
+- Scenario 5: Read-only supervision. Administration can review the history but cannot create, change, or cancel bookings or cleaning tasks from it.
+- Data model: `BookingEvent` references the booking and stores the event type, the receptionist responsible, date and time, changed data when applicable, and an optional cancellation reason. `CleaningTask` retains the history of completed cleaning work.
 
 ## Stays and housekeeping
 
@@ -182,7 +184,7 @@ so that the stay ends and the post-stay cleaning process begins.
 
 ### User Story — US-14: Request cleaning during a stay
 
-As a receptionist or administrator,<br>
+As a receptionist,<br>
 I want to create a cleaning task during a stay,<br>
 so that I can address a request or issue without changing the booking.
 
@@ -191,7 +193,7 @@ so that I can address a request or issue without changing the booking.
 - Scenario 1: Create a task. The task is associated with the room, identifies an in-stay request as its origin, and can be assigned to a housekeeper.
 - Scenario 2: Room occupancy. Creating or completing this task does not change the room's occupied condition or complete the booking.
 - Scenario 3: Concurrent tasks. A room cannot have more than one incomplete cleaning task at a time.
-- Data model: A task includes a room, origin, optional requesting user, optional assigned housekeeper, start and completion timestamps, and notes or incidents. It does not store a separate status: no start timestamp means Pending; a start timestamp without a completion timestamp means In Progress; a completion timestamp means Completed.
+- Data model: A task includes a room, origin, optional requesting receptionist (absent for tasks created automatically at check-out), optional assigned housekeeper, start and completion timestamps, and notes or incidents. It does not store a separate status: no start timestamp means Pending; a start timestamp without a completion timestamp means In Progress; a completion timestamp means Completed.
 
 ### User Story — US-15: Manage cleaning tasks
 
@@ -219,6 +221,7 @@ so that I can understand occupancy and booking activity.
 - Scenario 2: Occupancy rate. The dashboard shows the current rate, calculated as occupied rooms divided by active rooms, multiplied by 100. A room occupied during service cleaning still counts as occupied.
 - Scenario 3: Active bookings. The dashboard shows the number of Confirmed or In Progress bookings. A future confirmed booking counts as active but not as an occupied room in the current occupancy rate.
 - Scenario 4: Current figures. Dashboard metrics reflect the hotel's status at the time of the query.
+- Scenario 5: Read-only view. The dashboard is informational; it does not allow bookings or cleaning tasks to be created or changed.
 
 ## System administration and use
 
@@ -242,9 +245,9 @@ so that information is protected and staff responsibilities are separated.
 
 ### Acceptance Criteria
 
-- Scenario 1: Reception. Reception can manage guests and bookings, record check-in and check-out, and request cleaning.
+- Scenario 1: Reception. Reception can manage guests and bookings, record check-in and check-out, and request cleaning. It cannot manage users or rooms.
 - Scenario 2: Housekeeping. Housekeeping can view and update cleaning tasks, but cannot manage bookings, users, or administrative data.
-- Scenario 3: Administration. Administration can manage users, rooms, and bookings, and view the dashboard.
+- Scenario 3: Administration. Administration is limited to system-level and supervisory functions: it can manage users and rooms, review the booking and cleaning history, and view the dashboard. It cannot create, update, cancel, check in, or check out bookings, manage guests, or create or update cleaning tasks.
 - Scenario 4: Unauthorized access. An operation not allowed for a user type is denied even if invoked outside the user interface.
 
 ### Technical Constraints
