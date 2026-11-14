@@ -131,6 +131,7 @@ Credentials are kept in a `.env` file in the project root. It is ignored by git;
 | `ADMIN_USERNAME` | Spring Boot | Username of the initial administrator (default `admin`) |
 | `ADMIN_EMAIL` | Spring Boot | Email of the initial administrator |
 | `ADMIN_INITIAL_PASSWORD` | Spring Boot | Initial administrator password; required while no administrator exists |
+| `JWT_SECRET` | Spring Boot | Base64-encoded 256-bit key used to sign access tokens; generate with `openssl rand -base64 32`|
 
 Docker Compose reads `.env` automatically. Spring Boot imports it through `spring.config.import` in [application.properties](src/main/resources/application.properties), so no system environment variables are needed. Real environment variables take precedence, which allows other environments to provide their own values.
 
