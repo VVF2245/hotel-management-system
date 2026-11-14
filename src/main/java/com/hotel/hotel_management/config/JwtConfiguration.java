@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 @Configuration
-public class JWTConfiguration {
+public class JwtConfiguration {
     
     private static final int MIN_KEY_BYTES = 32;
 

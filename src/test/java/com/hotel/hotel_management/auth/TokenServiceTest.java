@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 
-import com.hotel.hotel_management.config.JWTConfiguration;
+import com.hotel.hotel_management.config.JwtConfiguration;
 import com.hotel.hotel_management.config.JwtProperties;
 import com.hotel.hotel_management.user.Administrator;
 import com.hotel.hotel_management.user.User;
@@ -22,7 +22,7 @@ class TokenServiceTest {
     private static final String SECRET = Base64.getEncoder().encodeToString(new byte[32]);
 
     private final JwtProperties properties = new JwtProperties(SECRET, Duration.ofHours(1), "hotel-management");
-    private final JWTConfiguration configuration = new JWTConfiguration();
+    private final JwtConfiguration configuration = new JwtConfiguration();
 
     private TokenService tokenService;
     private  JwtDecoder decoder;
