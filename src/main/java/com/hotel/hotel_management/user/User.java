@@ -71,4 +71,6 @@ public abstract class User extends BaseEntity {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    public abstract Role getRole();
+
 }

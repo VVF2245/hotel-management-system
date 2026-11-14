@@ -9,4 +9,9 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("HOUSEKEEPER")
 public class Housekeeper extends User {
+
+    @Override
+    public Role getRole() {
+        return Role.HOUSEKEEPER;
+    }
 }

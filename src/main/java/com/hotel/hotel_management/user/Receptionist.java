@@ -10,4 +10,9 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("RECEPTIONIST")
 public class Receptionist extends User {
+
+    @Override
+    public Role getRole() {
+        return Role.RECEPTIONIST;
+    }
 }

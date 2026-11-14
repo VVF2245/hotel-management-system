@@ -11,4 +11,9 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("ADMINISTRATOR")
 public class Administrator extends User {
+
+    @Override
+    public Role getRole() {
+        return Role.ADMINISTRATOR;
+    }
 }
