@@ -179,6 +179,7 @@ Staff sign in with a username and password. The backend is stateless: it keeps n
 1. `GET /api/auth/csrf` returns `204` and sets the `XSRF-TOKEN` cookie. The frontend reads it and sends its value in the `X-XSRF-TOKEN` header on every `POST`, `PUT`, `PATCH` and `DELETE`, including the login.
 2. `POST /api/auth/login` with `{ "username": "...", "password": "..." }` checks the credentials. On success it returns `200` with `username`, `role` and `mustChangePassword`, and sets the `access_token` cookie.
 3. The browser sends that cookie automatically on later requests to `/api`. The backend validates the JWT it contains and applies the user's role.
+4. `POST /api/auth/logout` (also with the `X-XSRF-TOKEN` header) clears the `access_token` cookie. It does not require a valid session, so an expired cookie can always be removed.
 
 ### Security decisions
 
@@ -187,6 +188,7 @@ Staff sign in with a username and password. The backend is stateless: it keeps n
 - **Tokens are signed with HS256** using `JWT_SECRET` and expire after 1 hour (`app.jwt.expiration`). They carry the username, the role, and whether a password change is required. They never carry a password or a hash.
 - **Every authentication failure returns the same `401`** (`Invalid username or password`), whether the password is wrong, the user does not exist, or the account is inactive, so the response does not reveal which usernames exist.
 - Passwords are stored only as bcrypt hashes (see [Initial administrator](#initial-administrator)).
+- **Logout removes the cookie but does not revoke the token.** A copied token stays valid until it expires (1 hour). Because the cookie is `HttpOnly`, page scripts cannot copy it. Real revocation would need refresh tokens or a denylist, which are out of scope for now.
 
 ### Trying it from a terminal
 
