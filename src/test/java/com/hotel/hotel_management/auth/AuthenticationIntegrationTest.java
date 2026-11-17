@@ -12,7 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -101,6 +109,12 @@ class AuthenticationIntegrationTest {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private JwtEncoder jwtEncoder;
+
+    @Autowired
+    private JwtProperties jwtProperties;
+
     @MockitoBean
     private UserRepository userRepository;
 
@@ -115,6 +129,20 @@ class AuthenticationIntegrationTest {
 
     private String tokenFor(User user) {
         return tokenService.issue(user).value();
+    }
+
+    /** Signs a valid administrator token with the real key, but with the given validity period. */
+    private String administratorTokenValidBetween(Instant issuedAt, Instant expiresAt) {
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer(jwtProperties.issuer())
+                .issuedAt(issuedAt)
+                .expiresAt(expiresAt)
+                .subject("boss")
+                .claim(TokenService.ROLES_CLAIM, List.of("ADMINISTRATOR"))
+                .claim(TokenService.MUST_CHANGE_PASSWORD_CLAIM, false)
+                .build();
+        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
 
     /** Requests a CSRF token from the API, as the frontend does before logging in. */
@@ -285,6 +313,25 @@ class AuthenticationIntegrationTest {
 
         mockMvc.perform(get("/api/probe").header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenFor(admin)))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void expiredTokenInTheCookieIsUnauthorized() throws Exception {
+        Instant now = Instant.now();
+        String expired = administratorTokenValidBetween(now.minus(Duration.ofHours(2)), now.minus(Duration.ofHours(1)));
+
+        mockMvc.perform(get("/api/probe").cookie(new Cookie(ACCESS_TOKEN_COOKIE, expired)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void sameTokenBuiltByHandIsAcceptedWhileItHasNotExpired() throws Exception {
+        Instant now = Instant.now();
+        String valid = administratorTokenValidBetween(now, now.plus(Duration.ofHours(1)));
+
+        mockMvc.perform(get("/api/probe").cookie(new Cookie(ACCESS_TOKEN_COOKIE, valid)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("ROLE_ADMINISTRATOR")));
     }
 
     // ---- Logout ----
