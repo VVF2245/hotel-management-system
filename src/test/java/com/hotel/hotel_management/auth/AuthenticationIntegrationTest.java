@@ -142,6 +142,15 @@ class AuthenticationIntegrationTest {
         return request;
     }
 
+    private MockHttpServletRequestBuilder logoutRequest(boolean withCsrf) throws Exception {
+        MockHttpServletRequestBuilder request = post("/api/auth/logout");
+        if (withCsrf) {
+                String token = requestXsrfToken();
+                request.cookie(new Cookie(XSRF_COOKIE, token)).header(XSRF_HEADER, token);
+        }
+        return request;
+    }
+
     // ---- CSRF endpoint ----
 
     @Test
@@ -276,6 +285,42 @@ class AuthenticationIntegrationTest {
 
         mockMvc.perform(get("/api/probe").header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenFor(admin)))
                 .andExpect(status().isUnauthorized());
+    }
+
+    // ---- Logout ----
+
+    @Test
+    void logoutClearsTheAccessTokenCookie() throws Exception {
+        User admin = new Administrator();
+        admin.setUsername("boss");
+
+        MvcResult result = mockMvc.perform(logoutRequest(true)
+                        .cookie(new Cookie(ACCESS_TOKEN_COOKIE, tokenFor(admin))))
+                        .andExpect(status().isNoContent())
+                        .andReturn();
+        
+        String setCookie = result.getResponse().getHeaders(HttpHeaders.SET_COOKIE).stream()
+                .filter(value -> value.startsWith(ACCESS_TOKEN_COOKIE + "="))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("The access token cookie was not cleared"));
+
+        assertThat(setCookie)
+                .startsWith(ACCESS_TOKEN_COOKIE + "=;")
+                .contains("Max-Age=0")
+                .contains("Path=/api")
+                .contains("HttpOnly");
+    }
+
+    @Test 
+    void logoutWorksWithoutAValidSession() throws Exception {
+        mockMvc.perform(logoutRequest(true))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void logoutWithoutACsrfTokenIsForbidden() throws Exception {
+        mockMvc.perform(logoutRequest(false))
+                .andExpect(status().isForbidden());
     }
 
 }
