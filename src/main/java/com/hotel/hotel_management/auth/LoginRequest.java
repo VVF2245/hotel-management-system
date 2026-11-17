@@ -6,7 +6,7 @@ public record LoginRequest(@NotBlank String username, @NotBlank String password)
 
     @Override
     public String toString() {
-        return "LoginRequest[userame=" + username + "]";
+        return "LoginRequest[username=" + username + "]";
     }
     
 }
