@@ -59,5 +59,14 @@ public class UserService {
         return temporaryPassword.toString();
     }
 
+    @Transactional
+    public String resetPassword(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        String temporaryPassword = generateTemporaryPassword();
+        assignTemporaryPassword(user, temporaryPassword);
+        return temporaryPassword;
+    }
     
 }

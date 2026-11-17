@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -126,6 +129,32 @@ class UserServiceTest {
         
         assertThat(userService.generateTemporaryPassword())
             .isNotEqualTo(userService.generateTemporaryPassword());
+    }
+
+    @Test
+    void resetPasswordGeneratesAndAssignsATemporaryPassword() {
+        User user = new Receptionist();
+        user.setPasswordHash(passwordEncoder.encode("OldPass1234"));
+        user.setMustChangePassword(false);
+        when(userRepository.findById(5L)).thenReturn(Optional.of(user));
+
+        String temporaryPassword = userService.resetPassword(5L);
+
+        assertThat(temporaryPassword).hasSize(12);
+        assertThat(passwordEncoder.matches(temporaryPassword, user.getPasswordHash())).isTrue();
+        assertThat(passwordEncoder.matches("OldPass1234", user.getPasswordHash())).isFalse();
+        assertThat(user.isMustChangePassword()).isTrue();
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void resetPasswordForAnUnknownUserFailsAndDoesNotSave() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.resetPassword(99L))
+                .isInstanceOf(UserNotFoundException.class);
+
+        verify(userRepository, never()).save(any());
     }
 
 }
