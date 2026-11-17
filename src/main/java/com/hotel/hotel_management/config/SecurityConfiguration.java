@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.hotel.hotel_management.auth.TokenService;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.Cookie;
 
 @Configuration
@@ -71,6 +72,9 @@ public class SecurityConfiguration {
             .csrf(csrf -> csrf.spa())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Without this, errors such as 400 or 403 are forwarded to /error, which would
+                // require authentication and turn every error into an empty 401.
+                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .anyRequest().authenticated())
